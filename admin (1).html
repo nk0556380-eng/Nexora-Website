@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="only light"><meta name="robots" content="noindex">
+<title>Nexora Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#b9c3b5;--panel:#e8ebe4;--tile:#dfe3d8;--ink:#141517;--lime:#f2fb8d;--mut:#7a7f74;--red:#c0392b}
+*{box-sizing:border-box}body{margin:0;background:var(--sage);color:var(--ink);font:14px/1.4 Manrope,Arial,sans-serif;min-height:100vh;padding:18px}
+button,input,select,textarea{font:inherit;color:inherit}:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.pb{border:0;border-radius:50px;background:var(--ink);color:#fff;padding:14px 24px;cursor:pointer;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:transform .15s}
+.pb:active{transform:scale(.95)}.pb.w{background:#fff;color:var(--ink)}.pb.sm{padding:7px 14px;font-size:13px}.pb.red{background:#fff;color:var(--red)}
+.circ{width:52px;height:52px;border-radius:50%;border:0;background:#fff;display:grid;place-items:center;cursor:pointer}
+#login{display:grid;place-items:center;min-height:90vh}#login form{background:var(--panel);border-radius:30px;padding:36px;width:100%;max-width:400px;display:grid;gap:14px}
+#login h1{margin:0;font-weight:400;font-size:34px;letter-spacing:-.03em}#login input,dialog input,dialog textarea{border:0;background:#fff;border-radius:22px;padding:14px 20px;width:100%}#err,#derr{color:var(--red);margin:0;min-height:18px}
+#app{display:none;max-width:1320px;margin:0 auto;background:var(--panel);border-radius:36px;padding:12px;grid-template-columns:76px 1fr;gap:22px}
+.rail{background:var(--ink);border-radius:28px;padding:14px 0;display:flex;flex-direction:column;align-items:center;gap:12px;position:sticky;top:12px;align-self:start;min-height:calc(100vh - 66px)}
+.rail .logo{width:48px;height:48px;border-radius:50%;background:#1f2124;border:1.5px solid #fff;color:#fff;display:grid;place-items:center;margin-bottom:18px}
+.rail a,.rail button{width:46px;height:46px;border-radius:16px;border:0;background:transparent;color:#cfd3cb;display:grid;place-items:center;cursor:pointer}.rail .on{background:#34373b;color:#fff}.rail .bt{margin-top:auto}
+main{padding:18px 18px 22px 0;min-width:0}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:26px}.hd .r{display:flex;gap:12px;align-items:center}
+h1.big{margin:0;font-weight:400;font-size:clamp(36px,5.2vw,60px);line-height:1.02;letter-spacing:-.045em}
+.chip{display:inline-grid;place-items:center;width:46px;height:32px;border-radius:50px;background:var(--tile);vertical-align:middle;margin:0 6px}.chip.l{background:var(--lime)}.chip svg{width:17px;height:17px}
+.grid{display:grid;grid-template-columns:1fr 268px;gap:16px}.left{min-width:0}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tabs button{border:0;border-radius:50px;background:#fff;padding:12px 20px;cursor:pointer;font-size:13.5px}.tabs button.on{background:var(--ink);color:#fff}
+.tiles{display:grid;grid-template-columns:1fr 1fr 1.15fr;gap:12px;margin-bottom:12px}
+.tile{background:var(--tile);border-radius:26px;padding:18px 18px 20px;min-height:216px;display:flex;flex-direction:column}.tile.lime{background:var(--lime)}
+.th{display:flex;align-items:center;gap:10px;font-weight:500;font-size:14.5px}.th .ic{width:38px;height:38px;border-radius:12px;background:#fff;display:grid;place-items:center}.th .k{margin-left:auto;letter-spacing:2px;font-weight:700}
+.nrow{display:flex;align-items:flex-end;gap:8px;margin-top:auto}.num{font-size:54px;font-weight:400;letter-spacing:-.045em;line-height:.95}.of{color:var(--mut);font-size:13px;padding-bottom:6px}
+.bdg{display:inline-flex;align-items:center;gap:4px;background:var(--lime);border-radius:50px;padding:2px 9px 2px 8px;font-size:12px;font-weight:500;margin-left:auto;align-self:flex-start}.lime .bdg{background:#fff}.bdg svg{width:14px;height:14px}
+.caps{display:flex;gap:7px;margin-top:14px}.caps i{flex:1;height:46px;border-radius:50px;background:var(--ink)}.caps i.o{background:transparent;border:1.4px dashed #a2a898}.lime .caps i.o{border-color:#bfc86a}
+.tile.dk{background:var(--ink);color:#fff;justify-content:space-between;position:relative;overflow:hidden}
+.tile.dk:before{content:"";position:absolute;right:-60px;top:-40px;width:220px;height:220px;border-radius:50%;border:1.5px solid #2c3034;box-shadow:0 0 0 30px #17191b,0 0 0 31px #2c3034,0 0 0 62px #17191b,0 0 0 63px #2c3034}
+.tile.dk h4{margin:0;font-weight:400;font-size:25px;line-height:1.12;letter-spacing:-.02em;position:relative}.tile.dk h4 svg{stroke:var(--lime);width:22px;height:22px;vertical-align:-3px}
+.tile.dk .pb{justify-content:center;position:relative}
+.panel{background:var(--tile);border-radius:26px;padding:18px 20px 12px;margin-bottom:12px}
+.ph{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:14px}.ph .ic{width:38px;height:38px;border-radius:12px;background:#fff;display:grid;place-items:center}.ph h3{margin:0;font-weight:400;font-size:28px;letter-spacing:-.03em}
+.lg{display:flex;gap:16px;font-size:12.5px;align-items:center}.lg i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ink);margin-right:6px}.lg i.l{background:#e4ec7a}
+.yr{margin-left:auto;background:#fff;border:0;border-radius:14px;padding:10px 14px}
+.chart{display:flex;gap:12px;height:270px}.ya{display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:var(--mut);padding-bottom:28px}
+.bars{flex:1;display:flex;gap:14px;align-items:flex-end}.col{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:11px;color:var(--mut)}
+.cap{width:100%;max-width:50px;border-radius:50px;background:var(--ink);position:relative;overflow:hidden;margin-bottom:8px}.cap .f{position:absolute;left:0;right:0;bottom:0;background:#eef58a;border-radius:50px}
+.cap .f:after{content:"";position:absolute;top:8px;left:50%;margin-left:-6px;width:12px;height:12px;border-radius:50%;background:var(--ink)}.cap u{position:absolute;top:9px;left:50%;margin-left:-6px;width:12px;height:12px;border-radius:50%;background:#fff;z-index:2}
+.cap.gh{background:transparent;border:1.4px dashed #a2a898;overflow:visible}.cap.gh u{background:#9aa090}
+.tp{position:absolute;right:-6px;border-radius:50px;padding:4px 9px;font-size:11px;font-weight:600;white-space:nowrap;z-index:3}.tp.b{background:var(--ink);color:#fff}.tp.l{background:var(--lime);color:var(--ink);left:-4px;right:auto}
+.tools{margin:14px 0 6px}.tools input{width:100%;border:0;background:#fff;border-radius:50px;padding:14px 22px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:separate;border-spacing:0 8px;min-width:700px}th{text-align:left;color:var(--mut);font-weight:500;font-size:12.5px;padding:0 14px}
+td{background:#f3f5ee;padding:12px 14px;vertical-align:middle}td:first-child{border-radius:18px 0 0 18px}td:last-child{border-radius:0 18px 18px 0}
+.st{border:0;border-radius:50px;padding:6px 12px;font-weight:600;font-size:12.5px;cursor:pointer}.s-new{background:#dbe7ff}.s-contacted{background:var(--lime)}.s-accepted{background:var(--ink);color:#fff}.s-paid{background:#bfe39a}.s-lost{background:#f6d9d5;color:var(--red)}
+.act{display:flex;gap:6px;flex-wrap:wrap}.empty{padding:26px;text-align:center;color:var(--mut)}
+.side{display:flex;flex-direction:column;gap:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sq,.sc{background:var(--tile);border-radius:24px;border:0;cursor:pointer;text-decoration:none;color:inherit;text-align:left}
+.sq{padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:12px;font-weight:500;min-height:118px;justify-content:center}.sq .ic,.sc .ic{width:42px;height:42px;border-radius:50%;background:#fff;display:grid;place-items:center}
+.sc{padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px;position:relative;min-height:122px}.sc .ar{position:absolute;right:16px;top:16px}.sc b{font-weight:500;font-size:15px;margin-top:auto}.sc span{color:var(--mut);font-size:12.5px}
+dialog{border:0;border-radius:28px;padding:28px;background:var(--panel);width:min(440px,92vw)}dialog::backdrop{background:rgba(20,21,23,.45)}dialog form{display:grid;gap:12px}dialog h3{margin:0 0 4px;font-weight:400;font-size:28px;letter-spacing:-.03em}
+@media(max-width:1000px){#app{grid-template-columns:1fr}.rail{flex-direction:row;padding:10px 14px;border-radius:24px;min-height:0;position:static}.rail .logo{margin:0}.rail .bt{margin:0 0 0 auto}main{padding:6px 8px 16px}.grid{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.side .two{grid-column:1/-1}}
+@media(prefers-reduced-motion:reduce){.pb{transition:none}}
+</style></head><body>
+<div id="login"><form id="lf"><h1>Nexora Admin</h1><p style="margin:0;color:var(--mut)">Enter your admin key to see leads.</p><input id="k" type="password" placeholder="Admin key" autocomplete="current-password" required><p id="err" role="alert"></p><button class="pb" type="submit">Log in</button><p style="margin:0;color:var(--mut);font-size:12px">First login can take up to a minute while the server wakes up.</p></form></div>
+<div id="app">
+<nav class="rail"><div class="logo"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></div>
+<a class="on" href="#top" title="Dashboard" aria-label="Dashboard"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></a>
+<a href="#leads" title="Leads" aria-label="Leads"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.5 3-5.5 6.5-5.5s6 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .6 3.2 2.4 3.5 5.2"/></svg></a>
+<a href="/" target="_blank" rel="noopener" title="Open website" aria-label="Open website"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></a>
+<button id="exp" title="Export CSV" aria-label="Export CSV"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 20h16"/></svg></button>
+<button class="bt" id="lo" title="Log out" aria-label="Log out"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button></nav>
+<main id="top">
+<div class="hd"><h1 class="big">Managing <span class="chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></span> Your Leads<br>and <span class="chip l"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></span> Growth</h1>
+<div class="r"><button class="circ" id="rf" title="Refresh leads" aria-label="Refresh leads"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg></button><button class="pb" id="add"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add a New Lead</button></div></div>
+<div class="grid"><div class="left">
+<div class="tabs" id="tabs"></div>
+<div class="tiles" id="tiles"></div>
+<div class="panel"><div class="ph"><span class="ic"><svg viewBox="0 0 24 24"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span><h3>Statistics</h3><div class="lg"><span><i></i>Leads</span><span><i class="l"></i>Contacted or accepted</span></div><select class="yr" id="yr" aria-label="Year"></select></div>
+<div class="chart"><div class="ya" id="ya"></div><div class="bars" id="bars"></div></div></div>
+<div class="tools" id="leads"><input id="q" type="search" placeholder="Search name, phone or business"></div>
+<div class="tw"><table><thead><tr><th>Lead</th><th>Business and message</th><th>Received</th><th>Status</th><th>Actions</th></tr></thead><tbody id="tb"></tbody></table><div class="empty" id="em" hidden>No leads found.</div></div>
+</div>
+<aside class="side" id="side"></aside></div>
+</main></div>
+<dialog id="iv"><form id="ivf" method="dialog"><h3 id="ivt">Create invoice</h3><div id="ivb"></div></form></dialog>
+<dialog id="dg"><form id="df"><h3>Add a New Lead</h3><input name="name" placeholder="Name" required maxlength="80"><input name="phone" placeholder="Phone / WhatsApp" required maxlength="20"><input name="business" placeholder="Business name and type" maxlength="100"><textarea name="message" rows="3" placeholder="Message (optional)" maxlength="1000"></textarea><p id="derr" role="alert"></p><div class="act"><button class="pb" type="submit">Save lead</button><button class="pb w" type="button" id="dc">Cancel</button></div></form></dialog>
+<script>
+const API='https://nexorabackend-1v8q.onrender.com';
+const $=id=>document.getElementById(id);let KEY=sessionStorage.getItem('nk')||'',L=[],F='all';
+const H=()=>({'x-admin-key':KEY,'Content-Type':'application/json'});
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e};
+const IC={cog:'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',swap:'<path d="M7 7h12l-3-3M17 17H5l3 3"/>',ar:'<path d="M7 17L17 7M9 7h8v8"/>',web:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',dl:'<path d="M12 3v12m0 0l-4-4m4 4l4-4M4 20h16"/>',rf:'<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/>',bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4"/>',cal:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',play:'<path d="M9 6l9 6-9 6z"/>',up:'<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>'};
+const svg=n=>{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.innerHTML=IC[n];return s};
+async function load(){const r=await fetch(API+'/api/leads',{headers:H()});if(!r.ok){logout();$('err').textContent='Wrong admin key.';return false}
+L=await r.json();$('login').style.display='none';$('app').style.display='grid';render();return true}
+function logout(){sessionStorage.removeItem('nk');KEY='';$('app').style.display='none';$('login').style.display='grid'}
+const cnt=s=>L.filter(l=>l.status===s).length,pc=(a,b)=>b?Math.round(a/b*100):0;
+function caps(n,t){const w=el('div','caps'),f=t?Math.round(n/t*7):0;for(let i=0;i<7;i++)w.append(el('i',i<f?'':'o'));return w}
+function badge(p){const b=el('span','bdg');b.append(svg('rf'),p+'%');b.firstChild.innerHTML='<circle cx="12" cy="12" r="8"/>';return b}
+function tile(cls,title,ic,n,total){const d=el('div','tile '+cls),h=el('div','th'),i=el('span','ic');i.append(svg(ic));h.append(i,title,el('span','k','⋮'));
+const r=el('div','nrow');r.append(el('span','num',String(n)),el('span','of','/ '+total),badge(pc(n,total)));d.append(h,r,caps(n,total));return d}
+function sq(ic,t,fn,href){const a=el(href?'a':'button','sq');if(href){a.href=href;a.target='_blank';a.rel='noopener'}else a.onclick=fn;const i=el('span','ic');i.append(svg(ic));a.append(i,t);return a}
+function sc(ic,t,s,fn){const a=el('button','sc'),i=el('span','ic'),r=el('span','ar');i.append(svg(ic));r.append(svg('ar'));a.append(i,r,el('b','',t),el('span','',s));a.onclick=fn;return a}
+function render(){
+$('tabs').innerHTML='';[['all','All leads'],['new','New'],['contacted','Contacted'],['accepted','Accepted'],['paid','Paid'],['lost','Lost']].forEach(([s,n])=>{const b=el('button',F===s?'on':'',n+(s==='all'?'':' ('+cnt(s)+')'));b.onclick=()=>{F=s;render()};$('tabs').append(b)});
+const T=L.length,t=$('tiles');t.innerHTML='';
+t.append(tile('','Contacted','cog',cnt('contacted')+cnt('accepted')+cnt('paid'),T),tile('lime','Accepted','swap',cnt('accepted')+cnt('paid'),T));
+const dk=el('div','tile dk'),h=el('h4');h.append('Take Your Leads ',svg('up'),el('br'),'to the Next Level');const bt=el('button','pb w');bt.append('View '+cnt('new')+' new',svg('play'));bt.onclick=()=>{F='new';render()};dk.append(h,bt);t.append(dk);
+const y=new Date().getFullYear();if(!$('yr').options.length){$('yr').add(new Option(y,y))}
+const days=[...Array(8)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-7+i);return d}),dl=days.map(d=>L.filter(l=>new Date(l.createdAt).toDateString()===d.toDateString())),mx=Math.max(4,...dl.map(a=>a.length)),top=dl.reduce((m,a,i)=>a.length>dl[m].length?i:m,0);
+$('ya').innerHTML='';[mx,Math.round(mx*.75),Math.round(mx/2),Math.round(mx/4),0].forEach(v=>$('ya').append(el('span','',String(v))));
+$('bars').innerHTML='';dl.forEach((a,i)=>{const c=el('div','col'),p=el('div','cap'+(a.length?'':' gh'));p.style.height=(a.length?Math.max(26,a.length/mx*100):62)+'%';
+if(a.length){const k=a.filter(x=>['accepted','paid','contacted'].includes(x.status)).length;if(k){const f=el('div','f');f.style.height=Math.min(80,Math.max(22,k/a.length*100))+'%';p.append(f)}}
+p.append(el('u'));c.append(p);
+if(a.length&&i===top){const tp=el('span','tp b',a.length+' leads');tp.style.bottom='calc('+p.style.height+' - 14px)';c.append(tp);const k=a.filter(x=>['accepted','paid','contacted'].includes(x.status)).length;if(k){const l=el('span','tp l',pc(k,a.length)+'%');l.style.bottom='calc('+Math.min(80,Math.max(22,k/a.length*100))*parseFloat(p.style.height)/100+'% - 6px)';c.append(l)}}
+c.append(document.createTextNode(days[i].toLocaleDateString('en-IN',{weekday:'short'})));$('bars').append(c)});
+const td=L.filter(l=>new Date(l.createdAt).toDateString()===new Date().toDateString()).length,sd=$('side');sd.innerHTML='';
+const two=el('div','two');two.append(sq('web','Website',null,'/'),sq('dl','Export CSV',csv));sd.append(two,
+sc('bell','New leads','Jump to leads nobody has replied to',()=>{F='new';render()}),
+sc('cal','Today',td+' lead'+(td===1?'':'s')+' received today',()=>{$('q').value='';F='all';render();$('leads').scrollIntoView({behavior:'smooth'})}),
+sc('rf','Refresh','Pull the latest enquiries from the database',load),
+sc('out','Log out','Sign out of the admin panel',logout));
+const q=$('q').value.toLowerCase(),tb=$('tb');tb.innerHTML='';
+const rows=L.filter(l=>(F==='all'||l.status===F)&&(!q||[l.name,l.phone,l.business].join(' ').toLowerCase().includes(q)));$('em').hidden=rows.length>0;
+rows.forEach(l=>{const tr=el('tr'),a=el('td'),b=el('td'),d=el('td'),s=el('td'),x=el('td');
+a.append(el('b','',l.name),document.createElement('br'),el('span','',l.phone));
+b.append(el('b','',l.business||'—'),document.createElement('br'),el('span','',[l.service,l.message].filter(Boolean).join(' · ')));
+d.textContent=new Date(l.createdAt).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const sel=el('select','st s-'+l.status);['new','contacted','accepted','paid','lost'].forEach(v=>sel.add(new Option(v,v,false,v===l.status)));
+sel.onchange=async()=>{const r=await fetch(API+'/api/leads/'+l._id,{method:'PATCH',headers:H(),body:JSON.stringify({status:sel.value})});if(r.ok){l.status=sel.value;render()}};s.append(sel);
+let ph=l.phone.replace(/\D/g,'');if(ph.length===10)ph='91'+ph;
+const w=el('a','pb sm','WhatsApp');w.href='https://wa.me/'+ph;w.target='_blank';w.rel='noopener';
+const c=el('a','pb sm w','Call');c.href='tel:'+l.phone.replace(/[^\d+]/g,'');
+const del=el('button','pb sm red','Delete');del.onclick=async()=>{if(!confirm('Delete lead from '+l.name+'?'))return;const r=await fetch(API+'/api/leads/'+l._id,{method:'DELETE',headers:H()});if(r.ok){L=L.filter(z=>z._id!==l._id);render()}};
+const ac=el('div','act');if(l.status==='new'||l.status==='contacted'){const ok=el('button','pb sm','Accept');ok.onclick=()=>accept(l);ac.append(ok)}if(l.status==='accepted'||l.status==='paid'){const iv=el('button','pb sm',l.invoice&&l.invoice.number?'Invoice':'Create invoice');iv.onclick=()=>openInv(l);ac.append(iv);const pt=el('button','pb sm w','Portal');pt.onclick=()=>openPortal(l);ac.append(pt)}ac.append(w,c,del);x.append(ac);tr.append(a,b,d,s,x);tb.append(tr)})}
+
+async function accept(l){const r=await fetch(API+'/api/leads/'+l._id+'/accept',{method:'POST',headers:H()});if(r.ok){Object.assign(l,await r.json());render();openPortal(l)}}
+function invUrl(l){return new URL('invoice.html?t='+l.invoice.token,location.href).href}
+function waLink(l){let ph=l.phone.replace(/\D/g,'');if(ph.length===10)ph='91'+ph;return 'https://wa.me/'+ph+'?text='+encodeURIComponent('Hi '+l.name+', thank you for choosing Nexora! Your invoice '+l.invoice.number+' (Rs '+l.invoice.total+') is ready: '+invUrl(l))}
+function openInv(l){const b=$('ivb');b.innerHTML='';
+ if(l.invoice&&l.invoice.number){$('ivt').textContent='Invoice '+l.invoice.number;b.append(el('p','','Total: Rs '+l.invoice.total+' for '+l.name+'.'));
+  const ac=el('div','act'),v=el('a','pb sm','View invoice');v.href=invUrl(l);v.target='_blank';v.rel='noopener';
+  const w=el('a','pb sm','Send on WhatsApp');w.href=waLink(l);w.target='_blank';w.rel='noopener';
+  const cp=el('button','pb sm w','Copy link');cp.type='button';cp.onclick=()=>{navigator.clipboard.writeText(invUrl(l));cp.textContent='Copied'};
+  const mp=el('button','pb sm w',l.status==='paid'?'Paid':'Mark as paid');mp.type='button';mp.disabled=l.status==='paid';mp.onclick=async()=>{const r=await fetch(API+'/api/leads/'+l._id,{method:'PATCH',headers:H(),body:JSON.stringify({status:'paid'})});if(r.ok){Object.assign(l,await r.json());$('iv').close();render()}};
+  const cl=el('button','pb sm w','Close');cl.type='button';cl.onclick=()=>$('iv').close();ac.append(v,w,cp,mp,cl);b.append(ac)}
+ else{$('ivt').textContent='Create invoice for '+l.name;const rows=el('div');rows.style.cssText='display:grid;gap:8px';
+  const add=(d,m)=>{const r=el('div');r.style.cssText='display:grid;grid-template-columns:1fr 110px;gap:8px';const i1=el('input');i1.placeholder='Item (e.g. Website)';i1.value=d||'';i1.maxLength=120;const i2=el('input');i2.type='number';i2.min='0';i2.placeholder='Amount';i2.value=m||'';r.append(i1,i2);rows.append(r)};
+  add(l.service||'','');const ad=el('button','pb sm w','+ Add item');ad.type='button';ad.onclick=()=>add();
+  const nt=el('input');nt.placeholder='Note (optional)';nt.maxLength=300;const er=el('p','');er.style.color='#c0392b';
+  const ok=el('button','pb','Create invoice');ok.type='button';
+  ok.onclick=async()=>{const items=[...rows.children].map(r=>({description:r.children[0].value.trim(),amount:Number(r.children[1].value)})).filter(x=>x.description||x.amount);
+   if(!items.length||items.some(x=>!x.description||!(x.amount>=0)||r2(x.amount))){er.textContent='Fill description and amount for every item.';return}
+   ok.disabled=true;const r=await fetch(API+'/api/leads/'+l._id+'/invoice',{method:'POST',headers:H(),body:JSON.stringify({items,note:nt.value})});
+   if(r.ok){Object.assign(l,await r.json());render();openInv(l)}else{er.textContent='Could not create invoice.';ok.disabled=false}};
+  const cl=el('button','pb w','Cancel');cl.type='button';cl.onclick=()=>$('iv').close();const ac=el('div','act');ac.append(ok,cl);b.append(rows,ad,nt,er,ac)}
+ $('iv').showModal()}
+const r2=v=>!Number.isFinite(v);
+function portalUrl(l){return new URL('portal.html?t='+l.portalToken,location.href).href}
+function openPortal(l){const b=$('ivb');b.innerHTML='';$('ivt').textContent='Client portal for '+l.name;
+ if(!l.portalToken){b.append(el('p','','Accept this lead first to create portal access.'))}
+ else{let ph=l.phone.replace(/\D/g,'');if(ph.length===10)ph='91'+ph;
+  b.append(el('p','','Login code: '+l.portalCode+'  (client logs in with their phone number and this code, or just opens the link)'));
+  const ac=el('div','act'),v=el('a','pb sm','Open portal');v.href=portalUrl(l);v.target='_blank';v.rel='noopener';
+  const w=el('a','pb sm','Send on WhatsApp');w.href='https://wa.me/'+ph+'?text='+encodeURIComponent('Hi '+l.name+', your Nexora client portal is ready. Open it here: '+portalUrl(l)+'  Or log in with your phone number and this code: '+l.portalCode);w.target='_blank';w.rel='noopener';
+  const cp=el('button','pb sm w','Copy link');cp.type='button';cp.onclick=()=>{navigator.clipboard.writeText(portalUrl(l));cp.textContent='Copied'};ac.append(v,w,cp);b.append(ac)}
+ const cl=el('button','pb sm w','Close');cl.type='button';cl.style.marginTop='12px';cl.onclick=()=>$('iv').close();b.append(cl);$('iv').showModal()}
+function csv(){const e=v=>'"'+String(v||'').replace(/"/g,'""')+'"';const r=[['Name','Phone','Business','Message','Status','Received'].join(',')].concat(L.map(l=>[l.name,l.phone,l.business,l.message,l.status,l.createdAt].map(e).join(',')));
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([r.join('\n')],{type:'text/csv'}));a.download='nexora-leads.csv';a.click()}
+$('lf').onsubmit=async e=>{e.preventDefault();KEY=$('k').value;if(await load())sessionStorage.setItem('nk',KEY)};
+$('add').onclick=()=>{$('derr').textContent='';$('dg').showModal()};$('dc').onclick=()=>$('dg').close();
+$('df').onsubmit=async e=>{e.preventDefault();const r=await fetch(API+'/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(e.target)))});const d=await r.json().catch(()=>({}));
+if(d.ok){e.target.reset();$('dg').close();load()}else $('derr').textContent=d.error||'Could not save lead.'};
+$('lo').onclick=logout;$('rf').onclick=load;$('q').oninput=render;$('exp').onclick=csv;
+setInterval(async()=>{if(!KEY||document.hidden||$('dg').open)return;try{const r=await fetch(API+'/api/leads',{headers:H()});if(r.ok){L=await r.json();render()}}catch(e){}},30000);
+if(KEY)load();
+</script></body></html>

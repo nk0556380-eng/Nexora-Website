@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="only light"><meta name="robots" content="noindex">
+<title>Invoice — Nexora</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#efede6;color:#171a16;font:15px/1.55 Inter,Arial,sans-serif;padding:24px}
+.sheet{max-width:760px;margin:0 auto;background:#fff;border-radius:12px;padding:44px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.top{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:34px}.logo{font:italic 400 38px "Instrument Serif",serif}
+.badge{display:inline-block;border-radius:50px;padding:5px 14px;font-weight:600;font-size:13px;background:#f6d9d5;color:#b03a2e}.badge.p{background:#d8efc3;color:#2f6b1f}
+h1{font:600 13px Inter;letter-spacing:.1em;text-transform:uppercase;color:#6d7168;margin:0 0 4px}.meta{color:#6d7168}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:30px}.two b{display:block}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#6d7168;padding:10px 0;border-bottom:1px solid #d9d8cf}td{padding:12px 0;border-bottom:1px solid #eceae2}td.r,th.r{text-align:right}
+.tot{display:flex;justify-content:flex-end;gap:30px;padding:18px 0;font-size:20px;font-weight:600}.note{background:#f6f5ef;border-radius:8px;padding:14px 16px;color:#4b5046;margin-top:6px}
+.pay{margin-top:26px;padding-top:20px;border-top:1px dashed #cfcdc3;color:#4b5046}
+.act{max-width:760px;margin:16px auto 0;display:flex;gap:10px;justify-content:center}button{border:0;border-radius:50px;background:#171a16;color:#fff;padding:12px 24px;font:500 14px Inter;cursor:pointer}
+#err{text-align:center;padding:60px 0;color:#6d7168}
+@media(max-width:600px){.sheet{padding:24px}.two{grid-template-columns:1fr}}
+@media print{body{background:#fff;padding:0}.sheet{box-shadow:none;max-width:none;padding:0}.act{display:none}}
+</style></head><body>
+<div id="err">Loading invoice... (the first load can take up to a minute)</div>
+<div id="inv" hidden><div class="sheet">
+<div class="top"><div><div class="logo" id="sn"></div><div class="meta" id="sa"></div></div><div style="text-align:right"><h1>Invoice</h1><b id="no"></b><div class="meta" id="dt"></div><div style="margin-top:8px"><span class="badge" id="bd"></span></div></div></div>
+<div class="two"><div><h1>Billed to</h1><b id="cn"></b><div class="meta" id="cb"></div><div class="meta" id="cp"></div></div><div><h1>From</h1><b id="sn2"></b><div class="meta" id="se"></div></div></div>
+<table><thead><tr><th>Description</th><th class="r">Amount</th></tr></thead><tbody id="rows"></tbody></table>
+<div class="tot"><span>Total</span><span id="tt"></span></div><div class="note" id="nt" hidden></div>
+<div class="pay" id="pay">Payment details will be shared with you on WhatsApp.</div>
+</div><div class="act"><button onclick="window.print()">Download / Print PDF</button></div></div>
+<script>
+const API='https://nexorabackend-1v8q.onrender.com';
+const $=id=>document.getElementById(id),t=new URLSearchParams(location.search).get('t')||'';
+const inr=n=>'Rs '+Number(n).toLocaleString('en-IN');
+fetch(API+'/api/invoices/'+encodeURIComponent(t)).then(r=>r.ok?r.json():Promise.reject()).then(d=>{
+ $('sn').textContent=d.seller.name;$('sn2').textContent=d.seller.name;$('sa').textContent=d.seller.address;
+ $('se').textContent=[d.seller.email,d.seller.phone].filter(Boolean).join(' · ');
+ $('no').textContent=d.number;$('dt').textContent='Issued '+new Date(d.issuedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+ const b=$('bd');b.textContent=d.paid?'Paid':'Unpaid';if(d.paid){b.classList.add('p');$('pay').textContent='Payment received. Thank you!'}
+ $('cn').textContent=d.client.name;$('cb').textContent=d.client.business||'';$('cp').textContent=d.client.phone||'';
+ d.items.forEach(i=>{const tr=document.createElement('tr'),a=document.createElement('td'),m=document.createElement('td');a.textContent=i.description;m.textContent=inr(i.amount);m.className='r';tr.append(a,m);$('rows').append(tr)});
+ $('tt').textContent=inr(d.total);if(d.note){$('nt').hidden=false;$('nt').textContent=d.note}
+ $('err').hidden=true;$('inv').hidden=false;document.title='Invoice '+d.number+' — Nexora'}).catch(()=>{$('err').textContent='Invoice not found. Please check your link.'});
+</script></body></html>

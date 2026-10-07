@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="only light"><meta name="robots" content="noindex">
+<title>Client portal — Nexora</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8f7f1;--ink:#171a16;--mu:#6d7168;--ln:#d9d8cf;--gr:#3e6b2f;--hl:#dcebbd}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,Arial,sans-serif}
+h1,h2,h3{font-family:"Inter Tight",Inter,sans-serif;font-weight:500;letter-spacing:-.04em;line-height:1.08;margin:0}
+.lab{font:500 11.5px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.pill{display:inline-flex;align-items:center;justify-content:center;border-radius:50px;padding:11px 22px;font:500 11.5px "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border:0;cursor:pointer;background:var(--ink);color:#fff;transition:transform .15s}
+.pill:active{transform:scale(.95)}.pill.w{background:#fff;color:var(--ink);box-shadow:0 0 0 1px var(--ln)}.pill[disabled]{opacity:.6}
+:focus-visible{outline:3px solid var(--gr);outline-offset:3px}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid var(--ln);background:#fff}
+.logo{font:italic 400 30px "Instrument Serif",serif;text-decoration:none;color:inherit}header div{display:flex;gap:10px;align-items:center}
+main{max-width:980px;margin:0 auto;padding:44px 24px 80px}
+.card{background:#fff;border:1px solid var(--ln);border-radius:12px;padding:26px}
+#login{max-width:430px;margin:40px auto 0;display:grid;gap:12px}#login h1{font-size:38px}#login p{margin:0;color:var(--mu)}
+input{font:inherit;padding:14px 16px;border:1px solid var(--ln);border-radius:8px;width:100%;background:#fff}input:focus{outline:2px solid var(--gr);border-color:var(--gr)}
+#code{text-transform:uppercase;letter-spacing:.25em;font-family:"IBM Plex Mono",monospace}
+#err{color:#b03a2e;min-height:22px;font-size:14px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:30px}.top h1{font-size:clamp(34px,5vw,54px)}.top p{margin:6px 0 0;color:var(--mu)}
+.chip{display:inline-block;border-radius:50px;padding:6px 16px;font-weight:600;font-size:13px;background:var(--hl);color:#2f5a22}.chip.n{background:#ece9dd;color:#5b5f54}
+.tl{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:22px}.st{position:relative;padding-top:34px}
+.st:before{content:"";position:absolute;top:11px;left:0;right:0;border-top:2px dashed #c9c7bc}.st.d:before{border-top:2px solid var(--gr)}
+.st i{position:absolute;top:0;left:0;width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #c9c7bc;display:grid;place-items:center;font-style:normal;font-size:13px;color:#fff;z-index:1}.st.d i{background:var(--gr);border-color:var(--gr)}
+.st b{display:block;font-weight:500}.st span{font-size:13px;color:var(--mu)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid .full{grid-column:1/-1}
+.card h3{font-size:22px;margin:8px 0 12px}.card p{margin:0 0 10px;color:var(--mu)}
+.inv{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 0;border-top:1px solid var(--ln)}.inv:first-of-type{border-top:0}
+.inv b{display:block}.inv small{color:var(--mu)}.bd{border-radius:50px;padding:4px 12px;font-size:12.5px;font-weight:600;background:#f6d9d5;color:#b03a2e}.bd.p{background:#d8efc3;color:#2f6b1f}
+.amt{font:500 22px "Inter Tight";letter-spacing:-.03em}
+@media(max-width:700px){.tl{grid-template-columns:1fr 1fr;row-gap:22px}.grid{grid-template-columns:1fr}header{padding:14px 16px}}
+</style></head><body>
+<header><a class="logo" href="#">Nexora</a><div><span class="lab">Client portal</span><button class="pill w" id="out" hidden>Log out</button></div></header>
+<main>
+<form id="login" class="card"><span class="lab">Client portal</span><h1>See your project status</h1><p>Use the phone number you gave us and the access code we sent you on WhatsApp.</p>
+<input id="phone" type="tel" inputmode="tel" placeholder="Your phone number" autocomplete="tel" required><input id="code" placeholder="ACCESS CODE" maxlength="6" autocomplete="one-time-code" required>
+<div id="err" role="alert"></div><button class="pill" id="go" type="submit">Open my portal</button><p style="font-size:13px">The first load can take up to a minute.</p></form>
+<div id="app" hidden>
+<div class="top"><div><span class="lab" id="biz"></span><h1 id="hi"></h1><p id="svc"></p></div><span class="chip" id="chip"></span></div>
+<div class="tl" id="tl"></div>
+<div class="grid"><div class="card full"><span class="lab">Invoices</span><h3>Your invoices</h3><div id="invs"></div></div>
+<div class="card"><span class="lab">Payment</span><h3 id="pt"></h3><p id="pm"></p></div>
+<div class="card"><span class="lab">Need help?</span><h3>Talk to us</h3><p>Questions about your project or invoice? Message us on WhatsApp.</p><a class="pill" id="wa" href="#" target="_blank" rel="noopener">WhatsApp Nexora</a></div></div>
+</div></main>
+<script>
+const API='https://nexorabackend-1v8q.onrender.com',$=id=>document.getElementById(id);
+const fd=d=>d?new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'';
+const inr=n=>'Rs '+Number(n).toLocaleString('en-IN');
+let tok=new URLSearchParams(location.search).get('t')||sessionStorage.getItem('ntk')||'';
+function out(){sessionStorage.removeItem('ntk');tok='';$('app').hidden=true;$('login').hidden=false;$('out').hidden=true;history.replaceState(null,'',location.pathname)}
+async function load(){
+  try{const r=await fetch(API+'/api/portal/me',{headers:{'x-portal-token':tok}});
+  if(!r.ok){out();return false}
+  const d=await r.json();sessionStorage.setItem('ntk',tok);
+  $('login').hidden=true;$('app').hidden=false;$('out').hidden=false;
+  $('hi').textContent='Hi '+(d.client.name||'there').split(' ')[0];$('biz').textContent=d.client.business||'Your project';$('svc').textContent=d.service?'Service: '+d.service:'';
+  const paid=d.status==='paid',acc=['accepted','paid'].includes(d.status),inv=d.invoices.length>0;
+  const c=$('chip');c.textContent=paid?'Paid':inv?'Invoice sent':acc?'Accepted':d.status==='lost'?'Closed':'Request received';c.className='chip'+(acc||paid?'':' n');
+  const steps=[['Request received',d.timeline.received,true],['Accepted',d.timeline.accepted,acc],['Invoice issued',d.timeline.invoiced,inv],['Payment received',d.timeline.paid,paid]];
+  $('tl').innerHTML='';steps.forEach(([t,dt,ok])=>{const s=document.createElement('div');s.className='st'+(ok?' d':'');const i=document.createElement('i');i.textContent=ok?'✓':'';const b=document.createElement('b');b.textContent=t;const sp=document.createElement('span');sp.textContent=ok?fd(dt):'Pending';s.append(i,b,sp);$('tl').append(s)});
+  const L=$('invs');L.innerHTML='';
+  if(!inv){const p=document.createElement('p');p.textContent='No invoice yet. We will send it here and on WhatsApp.';L.append(p)}
+  d.invoices.forEach(v=>{const row=document.createElement('div');row.className='inv';const l=document.createElement('div'),b=document.createElement('b'),sm=document.createElement('small');b.textContent=v.number;sm.textContent='Issued '+fd(v.issuedAt);l.append(b,sm);
+   const a=document.createElement('span');a.className='amt';a.textContent=inr(v.total);const bd=document.createElement('span');bd.className='bd'+(v.paid?' p':'');bd.textContent=v.paid?'Paid':'Unpaid';
+   const ln=document.createElement('a');ln.className='pill w';ln.textContent='View / download';ln.href='invoice.html?t='+v.token;ln.target='_blank';ln.rel='noopener';row.append(l,a,bd,ln);L.append(row)});
+  $('pt').textContent=paid?'Payment received':inv?'Payment pending':'Nothing due yet';
+  $('pm').textContent=paid?'Paid on '+fd(d.timeline.paid)+'. Thank you!':inv?'We will share payment details with you on WhatsApp.':'Your invoice will appear here once it is ready.';
+  const ph=(d.seller.phone||'917044421095').replace(/\D/g,'');$('wa').href='https://wa.me/'+ph;
+  return true}catch(e){$('err').textContent='Could not connect. Please try again.';return false}}
+$('login').addEventListener('submit',async e=>{e.preventDefault();const b=$('go');b.disabled=true;$('err').textContent='Checking...';
+  try{const r=await fetch(API+'/api/portal/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:$('phone').value,code:$('code').value})});
+  const d=await r.json();if(r.ok&&d.token){tok=d.token;$('err').textContent='';await load()}else $('err').textContent=d.error||'Incorrect phone number or code.'}
+  catch{$('err').textContent='Network error. Please try again.'}b.disabled=false});
+$('out').onclick=out;
+if(tok){$('err').textContent='Loading your portal...';load().then(ok=>{if(!ok&&!$('err').textContent.startsWith('Could'))$('err').textContent=''})}
+</script></body></html>
