@@ -9,6 +9,7 @@ h1,h2,h3{font-family:"Inter Tight",Inter,sans-serif;font-weight:500;letter-spaci
 .lab{font:500 11.5px "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
 .pill{display:inline-flex;align-items:center;justify-content:center;border-radius:50px;padding:11px 22px;font:500 11.5px "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border:0;cursor:pointer;background:var(--ink);color:#fff;transition:transform .15s}
 .pill:active{transform:scale(.95)}.pill.w{background:#fff;color:var(--ink);box-shadow:0 0 0 1px var(--ln)}.pill[disabled]{opacity:.6}
+[hidden]{display:none!important}
 :focus-visible{outline:3px solid var(--gr);outline-offset:3px}
 header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid var(--ln);background:#fff}
 .logo{font:italic 400 30px "Instrument Serif",serif;text-decoration:none;color:inherit}header div{display:flex;gap:10px;align-items:center}
@@ -35,7 +36,7 @@ input{font:inherit;padding:14px 16px;border:1px solid var(--ln);border-radius:8p
 <main>
 <form id="login" class="card"><span class="lab">Client portal</span><h1>See your project status</h1><p>Use the phone number you gave us and the access code we sent you on WhatsApp.</p>
 <input id="phone" type="tel" inputmode="tel" placeholder="Your phone number" autocomplete="tel" required><input id="code" placeholder="ACCESS CODE" maxlength="6" autocomplete="one-time-code" required>
-<div id="err" role="alert"></div><button class="pill" id="go" type="submit">Open my portal</button><p style="font-size:13px">The first load can take up to a minute.</p></form>
+<div id="err" role="alert"></div><button class="pill" id="go" type="submit">Open my portal</button></form>
 <div id="app" hidden>
 <div class="top"><div><span class="lab" id="biz"></span><h1 id="hi"></h1><p id="svc"></p></div><span class="chip" id="chip"></span></div>
 <div class="tl" id="tl"></div>
@@ -52,7 +53,7 @@ function out(){sessionStorage.removeItem('ntk');tok='';$('app').hidden=true;$('l
 async function load(){
   try{const r=await fetch(API+'/api/portal/me',{headers:{'x-portal-token':tok}});
   if(!r.ok){out();return false}
-  const d=await r.json();sessionStorage.setItem('ntk',tok);
+  const d=await r.json();sessionStorage.setItem('ntk',tok);history.replaceState(null,'',location.pathname);
   $('login').hidden=true;$('app').hidden=false;$('out').hidden=false;
   $('hi').textContent='Hi '+(d.client.name||'there').split(' ')[0];$('biz').textContent=d.client.business||'Your project';$('svc').textContent=d.service?'Service: '+d.service:'';
   const paid=d.status==='paid',acc=['accepted','paid'].includes(d.status),inv=d.invoices.length>0;
