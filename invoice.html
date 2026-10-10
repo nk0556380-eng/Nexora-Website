@@ -58,8 +58,8 @@
 <div class="actions"><button onclick="window.print()">Download / Print PDF</button></div>
 
 <script>
-/* ===== EDIT THIS DATA (or fill it from your backend) ===== */
-const INV = {
+/* ===== BASE = fixed business details (same on every invoice) + demo values for per-invoice fields ===== */
+const BASE = {
   title: "INVOICE",
   number: "NX-2026-0001",
   date: "8 Oct 2026",
@@ -91,6 +91,8 @@ function words(n){
 const inr=n=>'₹'+n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=n=>n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
 
+function render(data){
+const INV={...BASE,...data};
 const taxable=INV.items.reduce((s,i)=>s+i.rate*i.qty,0);
 const subtotal=taxable, total=subtotal-INV.discount, balance=total-INV.paid;
 const qty=INV.items.reduce((s,i)=>s+i.qty,0);
@@ -174,6 +176,29 @@ document.getElementById('inv').innerHTML = `
 try{
   new QRCode(document.getElementById('qr'),{text:`upi://pay?pa=${INV.upi}&pn=${encodeURIComponent(INV.from.name)}&am=${total}&cu=INR&tn=${INV.number}`,width:104,height:104});
 }catch(e){document.getElementById('qr').textContent='QR unavailable';}
+}
+
+/* ===== LOAD PER-INVOICE DATA FROM BACKEND ===== */
+const API_URL = "";   // <-- apne backend ka invoice API URL yahan daalo (empty = demo data dikhega)
+function mapData(d){  // <-- backend ke field names yahan match karo
+  return {
+    number: d.number, date: d.date, due: d.due || d.date,
+    status: d.status, discount: d.discount || 0, paid: d.paid,
+    payMode: d.payMode, paidOn: d.paidOn,
+    to: { name: d.customerName, biz: d.business, phone: d.phone, addr: d.address || "" },
+    items: d.items   // [{ name, points:[...], rate, qty }]
+  };
+}
+(function(){
+  const box = document.getElementById('inv');
+  const t = new URLSearchParams(location.search).get('t');
+  if(!API_URL || !t){ render({}); return; }
+  box.innerHTML = '<p style="padding:60px;text-align:center;color:#666">Loading invoice…</p>';
+  fetch(API_URL + (API_URL.includes('?')?'&':'?') + 't=' + encodeURIComponent(t))
+    .then(r => { if(!r.ok) throw 0; return r.json(); })
+    .then(d => render(mapData(d)))
+    .catch(() => { box.innerHTML = '<p style="padding:60px;text-align:center;color:#666">Invoice not found.</p>'; });
+})();
 </script>
 </body>
 </html>
